@@ -21,24 +21,25 @@ void TitleScene::init() {
     BoardFromImage(&board_, "../../../data/gfx/maps/map_03_60x44_cost.png");
     board_.debugPrint();
 	
-    player_.init(10, 10.0f, 10.0f, 32.0f,
+    player_.init(10, 10.0f, 10.0f, 16.0f,
         { 00.0f,0.0f }, { 0.0f,0.0f }, "../../../data/gfx/agents/allied_soldier.bmp"); 
 	
     player_.index = rand() % board_.width_ * board_.height_;
     board_.index2rowcol(player_.row_, player_.col_, player_.index);
 	
 
-	player_.setPosition(sf::Vector2f(player_.col_[0] * 32.0f,player_.row_[0] * 32.0f));
+	player_.setPosition(sf::Vector2f(player_.col_[0] * 16.0f,player_.row_[0] * 16.0f));
    
-    texture.loadFromFile("../../../data/gfx/maps/map_03_960x704_layout ABGS.png");
+    texture.loadFromFile("../../../data/gfx/maps/map_03_960x704_cost.png");
     sprite.setTexture(texture);
-    sprite.setScale(2.0f, 2.0f);
+    sprite.setScale(1.0f, 1.0f);
 }
 
 void TitleScene::update(sf::Time deltaTime, Input& myinput, sf::RenderWindow& window) {
-      
+	system("cls");
+	board_.debugPrint();
     player_.update(deltaTime, myinput, &board_);
-   printf("X:%f                Y:%f          Index:%d\n", player_.position_.x, player_.position_.y,player_.index);
+    //printf("X:%f                Y:%f          Index:%d\n", player_.position_.x, player_.position_.y,player_.index);
 }
 
 void TitleScene::draw(sf::RenderWindow& window) {

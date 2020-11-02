@@ -220,11 +220,14 @@ void Board::debugPrint()
 		{
 			if (cell(row,col).value == kTileType_Normal)
 			{
-				printf(".");
+				printf("_");
 			}else if(cell(row,col).value == kTileType_Wall){
 				printf("#");
-			}else
+			}else if(cell(row,col).value == kTileType_Player)
 			{
+				printf("P");
+			}
+			else {
 				printf(" ");
 			}
 		}

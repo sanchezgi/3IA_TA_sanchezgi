@@ -17,7 +17,9 @@ enum TileType {
     kTileType_Wall,
     kTileType_Normal,    // kTileType_Normal has to be the first of the walkables
     kTileType_Door,
-    kTileType_End
+    kTileType_End,
+    kTileType_Player
+
 };
 
 // Possible Unit commands. Mainly for AI units

@@ -62,7 +62,7 @@ void Player::init(int life, int gravity, int jumpSpeed, int moveSpeed, sf::Vecto
         sprite_->setTexture(*texture_);
     }
 
-    sprite_->setScale({ 2.0f,2.0f });
+    sprite_->setScale({ 1.0f,1.0f });
 
     sf::IntRect rect = sprite_->getTextureRect();
 
@@ -134,8 +134,15 @@ void Player::move(sf::Time deltaTime, Input& input,Board* board) {
             velocity_.y = moveSpeed_;
             velocity_.x = 0.0f;
             index = board->south(index);
-        }
+		}
+		else 
+		{
+			printf("No hago nada\n");
+			velocity_.y = 0.0f;
+			velocity_.x = 0.0f;
+		}
      
+		board->cells_[index].value = kTileType_Player;
         movePosition({ velocity_.x , velocity_.y });   
 }
 

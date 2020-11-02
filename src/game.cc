@@ -18,7 +18,7 @@ void Game::init() {
     GameManager::Instance().w_width_ = 960;
     GameManager::Instance().w_height_ = 704;
 
-    window_.init(960 * 2, 704 * 2);
+    window_.init(960 , 704);
     
     srand(time(NULL));
     window_.frame(60);
