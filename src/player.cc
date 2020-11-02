@@ -4,7 +4,8 @@
 * @copyright 2019 Alejandro Sanchez Gimeno
 * @brief Player class.
 */
-#include"player.h"
+#include "player.h"
+#include "board.h"
 
 Player::Player() {
     init();
@@ -52,13 +53,16 @@ void Player::init(int life, int gravity, int jumpSpeed, int moveSpeed, sf::Vecto
     position_.y = position.y;
     velocity_.x = velocity.x;
     velocity_.y = velocity.y;
+    row_[0] = 0;
+    col_[0] = 0;
+    index = 0;
 
     if (file_name != NULL) {
         texture_->loadFromFile(file_name);
         sprite_->setTexture(*texture_);
     }
 
-    sprite_->setScale({ 20.0f,20.0f });
+    sprite_->setScale({ 2.0f,2.0f });
 
     sf::IntRect rect = sprite_->getTextureRect();
 
@@ -80,39 +84,64 @@ void Player::movePosition(sf::Vector2f pos) {
 
     position_.x = position.x;
     position_.y = position.y;
-    sf::IntRect rect = sprite_->getTextureRect();
 
     sprite_->move({ pos.x,pos.y });
 }
 
 
-void Player::move(Input& input) {
+void Player::move(sf::Time deltaTime, Input& input,Board* board) {
  
-        static int timer = 0;
-        sf::Vector2f pos = sprite_->getPosition();
-        sf::IntRect rect = sprite_->getTextureRect();
+        int random = rand() % 4;
 
-
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+       /* if (input.IsMovingRight) {
         	
             velocity_.x = moveSpeed_;
-            
+            velocity_.y = 0.0f;
         }
-        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+        else if (input.IsMovingLeft) {
             velocity_.x = - moveSpeed_;
+            velocity_.y = 0.0f;
+        }else if(input.IsMovingUp){
+            velocity_.y = -moveSpeed_;
+            velocity_.x = 0.0f;
         }
-        else {
+        else if (input.IsMovingDown) {
+            velocity_.y = moveSpeed_;
+            velocity_.x = 0.0f;
+        }
+        else{
             velocity_.x = 0;
-        }
-	
-        movePosition({ velocity_.x, velocity_.y });
-    
+            velocity_.y = 0;
+        }*/
+        
+        if (random == 0 && board->cells_[board->east(index)].value != kTileType_Wall) { // Right 
 
+            velocity_.x = moveSpeed_;
+            velocity_.y = 0.0f;
+            index = board->east(index);
+        }
+        else if (random == 1 && board->cells_[board->west(index)].value != kTileType_Wall) {             // Left
+            velocity_.x = -moveSpeed_;
+            velocity_.y = 0.0f;
+            index = board->west(index);
+        }
+        else if (random == 2 && board->cells_[board->north(index)].value != kTileType_Wall) {             // Up
+            velocity_.y = -moveSpeed_;
+            velocity_.x = 0.0f;
+            index = board->north(index);
+        }
+        else if (random == 3 && board->cells_[board->south(index)].value != kTileType_Wall) {             // Down
+            velocity_.y = moveSpeed_;
+            velocity_.x = 0.0f;
+            index = board->south(index);
+        }
+     
+        movePosition({ velocity_.x , velocity_.y });   
 }
 
-void Player::update(Input& input) {
-
-    move(input);
+void Player::update(sf::Time deltaTime, Input& input,Board* board) {
+	
+    move(deltaTime,input,board);
 }
 
 void Player::draw(sf::RenderWindow& window) {

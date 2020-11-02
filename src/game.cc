@@ -9,13 +9,16 @@
 #include "mainscene.h"
 #include "gamemanager.h"
 
+sf::Time TimePerFrame = sf::seconds(2.0f);
+
 void Game::init() {
     GameManager& GM = GameManager::Instance();
-	
-    GameManager::Instance().w_width_ = 1920;
-    GameManager::Instance().w_height_ = 1080;
 
-    window_.init(1920, 1080);
+	
+    GameManager::Instance().w_width_ = 960;
+    GameManager::Instance().w_height_ = 704;
+
+    window_.init(960 * 2, 704 * 2);
     
     srand(time(NULL));
     window_.frame(60);
@@ -25,27 +28,29 @@ void Game::init() {
 
     GameManager::Instance().num_scene_ = 1;
     GameManager::Instance().load_ = true;
-    InitInput(input_);
+    //InitInput(input_);
+
 }
 
-void Game::mainLoop() {
+void Game::mainLoop(Input& input_) {
+
+    sf::Clock clock;
+    sf::Time timeSinceLastUpdate = sf::Time::Zero;
     while (window_.isOpened())
     {
-        GameManager::Instance().dt_clock_.restart();
+        //sf::Time deltaTime = clock.restart();
         checkScene();
-        sf::Event event;
-        while (window_.window_.pollEvent(event))
+        processEvent(input_);
+        //update(deltaTime);
+        timeSinceLastUpdate += clock.restart();
+        while (timeSinceLastUpdate > TimePerFrame)
         {
-            if (event.type == sf::Event::Closed) {
-                window_.destroy();
-            }
-            CheckInput(input_, event);
-        }      
-        input();
-        update(GameManager::Instance().dt_clock_.getElapsedTime().asSeconds());
+            timeSinceLastUpdate -= TimePerFrame;
+            processEvent(input_);
+            fixedUpdate(TimePerFrame);       	
+        }
         draw();
     }
-
 }
 
 void Game::finish() {
@@ -64,12 +69,45 @@ Scene* Game::newScene(Scene* scene) {
     return aux;
 }
 
-void Game::input() {
+void Game::input(Input& input)
+{
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+        input_.IsMovingUp = true;
+    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+        input_.IsMovingDown = true;
+    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+        input_.IsMovingLeft = true;
+    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+        input_.IsMovingRight = true;
+    else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+        window_.window_.close();
+    else
+    {
+        input_.IsMovingDown = false;
+        input_.IsMovingUp = false;
+        input_.IsMovingLeft = false;
+        input_.IsMovingRight = false;
+    }	
+}
+void Game::update(sf::Time deltaTime)
+{
+    current_scene_->update(deltaTime, input_, window_.window_);
+}
 
+void Game::processEvent(Input& input_)
+{
+    sf::Event event;
+    while (window_.window_.pollEvent(event))
+    {
+        input(input_);
+    }
 }
-void Game::update(float deltaTime) {
-    current_scene_->update(GameManager::Instance().dt_clock_.getElapsedTime().asSeconds(), input_, window_.window_);
+
+void Game::fixedUpdate(sf::Time deltaTIme)
+{
+    current_scene_->update(deltaTIme, input_, window_.window_);
 }
+
 void Game::draw() {
     window_.clear();
     current_scene_->draw(window_.window_);

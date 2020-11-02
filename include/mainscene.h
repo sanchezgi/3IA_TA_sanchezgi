@@ -8,6 +8,7 @@
 #ifndef __TITLE_SCENE_H__
 #define __TITLE_SCENE_H__ 1
 
+#include "board.h"
 #include "input.h"
 
 #include "scene.h"
@@ -35,7 +36,7 @@ public:
     * @param myinput user input.
     * @param window The window that renders and paint the object.
     */
-    void update(float dt, Input& myinput, sf::RenderWindow& window) override;
+    void update(sf::Time deltaTime, Input& myinput, sf::RenderWindow& window) override;
     /** @brief Function that draws all the objects.
     *
     * @param window The window that renders and paint the object.
@@ -44,6 +45,7 @@ public:
 
    
     Player player_;
+    Board board_;
    
     bool build_;
     const int max_enemies = 20;

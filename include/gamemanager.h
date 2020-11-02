@@ -10,6 +10,8 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 
+#include "board.h"
+
 class GameManager {
 public:
 
@@ -18,8 +20,6 @@ public:
     int w_height_; /**< window height */
     int num_scene_; /**< number of the scene */
     bool load_; /**< boolean that checks if the scene is loaded or not */
-    sf::Clock dt_clock_; /**< timer that controlls the flux of the game */
-    int num_map_; /**< numbre of the map to load from the data base */
 
     /** @brief Returns an instance of the GameManager.
     *

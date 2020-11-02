@@ -24,7 +24,7 @@ public:
     /** @brief Loop that repeats the input, update and draw of the current scene.
     *
     */
-    void mainLoop();
+    void mainLoop(Input& input);
     /** @brief destroy all object before exit the program.
     *
     */
@@ -45,11 +45,16 @@ protected:
     /** @brief Manages all the user input.
     *
     */
-    void input();
+    void input(Input& input);
     /** @brief Updates the current scene.
     *
     */
-    void update(float deltaTime);
+    void update(sf::Time deltaTime);
+    /** @brief Updates the current scene.
+    *
+    */
+    void processEvent(Input& input);
+    void fixedUpdate(sf::Time deltaTIme);
     /** @brief Draw the current scene.
     *
     */

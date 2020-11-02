@@ -7,13 +7,15 @@
 */
 
 #include "game.h"
+#include "input.h"
 
 int main(int argc, char const* argv[]) {
 
     Game g;
+    Input i;
 	
     g.init();
-    g.mainLoop();
+    g.mainLoop(i);
     g.finish();
     
     return 0;

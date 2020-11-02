@@ -24,7 +24,7 @@ public:
     * @param myinput user input.
     * @param window The window that renders and paint the object.
     */
-    virtual void update(float dt, Input& myinput, sf::RenderWindow& window) = 0;
+    virtual void update(sf::Time deltaTime, Input& myinput, sf::RenderWindow& window) = 0;
     /** @brief Function that draws all the objects.
     *
     * @param window The window that renders and paint the object.

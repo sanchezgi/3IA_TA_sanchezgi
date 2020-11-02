@@ -12,6 +12,8 @@
 #include "SFML/Window.hpp"
 #include "input.h"
 
+class Board;
+
 class Player {
 public:
 
@@ -66,14 +68,14 @@ public:
     * @param collision1 The first point to detect the collision and decides if the player moves or not.
     * @param collision2 The second point to detect the collision and decides if the player moves or not.
     */
-    void move(Input& input);
+    void move(sf::Time deltaTime, Input& input,Board* Board);
     /** @brief Updates the player
     *
     * @param input The input of the player.
     * @param collision1 The first point to detect the collision and decides if the player updates or not.
     * @param collision2 The second point to detect the collision and decides if the player updates or not.
     */
-    void update(Input& input);
+    void update(sf::Time deltaTime, Input& input,Board* board);
     /** @brief Draw the player
     *
     * @param window The window that renders and paint the objects.
@@ -84,6 +86,9 @@ public:
     int gravity_;
     int jumpSpeed_;
     int moveSpeed_;
+    int row_[1];
+    int col_[1];
+    int index;
     sf::Vector2f position_;
     sf::Vector2f velocity_;
     sf::Sprite* sprite_; /**< pointer to the player sprite */
