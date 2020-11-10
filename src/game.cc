@@ -9,7 +9,7 @@
 #include "mainscene.h"
 #include "gamemanager.h"
 
-sf::Time TimePerFrame = sf::seconds(2.0f);
+sf::Time TimePerFrame = sf::seconds(1.0f);
 
 void Game::init() {
     GameManager& GM = GameManager::Instance();

@@ -14,6 +14,34 @@
 
 class Board;
 
+enum MovementType
+{
+    kRandomMovement = 0,
+    kPathFinding,
+    kPattern,
+    kDeterministMovement,
+	kTrackingMovement,
+    kNone,
+};
+
+enum PatternsCommands
+{
+	kGoForward = 0,
+	kTurnLeft,
+	kTurnRight,
+	kStop,
+	kBackwards,	
+};
+
+enum Direction
+{
+    kUp = 0,
+	kLeft,
+	kDown,
+	kRight,
+	kDirectionNone,
+};
+
 class Player {
 public:
 
@@ -36,15 +64,12 @@ public:
     void init();
     /** @brief Function that initializes all the variables with certain parameters.
     *
-    * @param life The life of the player.
-    * @param gravity The force of the gravity that affect the player.
-    * @param jumpSpeed The force of the player's jump.
     * @param moveSpeed The speed of the player's movement.
     * @param position The position of the player.
     * @param velocity The vector of the player's movement.
     * @param file_name The file of the spritesheet.
     */
-    void init(int life, int gravity, int jumpSpeed, int moveSpeed, sf::Vector2f position,
+    void init(int moveSpeed, sf::Vector2f position,
         sf::Vector2f velocity, const char* file_name);
     /** @brief Sets the position of the player.
     *
@@ -82,19 +107,24 @@ public:
     */
     void draw(sf::RenderWindow& window);
 
-    int life_;
-    int gravity_;
-    int jumpSpeed_;
+    void randomMovement(sf::Time deltaTime, Input& input, Board* Board);
+    void deterministMovement(sf::Time deltaTime, Input& input, Board* Board);
+    void patternMovement(sf::Time deltaTime, Input& input, Board* Board);
+    void trackingMovement(sf::Time deltaTime, Input& input, Board* Board,int dest);
+
     int moveSpeed_;
     int row_[1];
     int col_[1];
     int index;
+    int typeMovement;
+    bool pathChosen;
+    int direction;
+    int patternsArray[8];
+    int step;
     sf::Vector2f position_;
     sf::Vector2f velocity_;
     sf::Sprite* sprite_; /**< pointer to the player sprite */
     sf::Texture* texture_; /**< pointer to the sprite texture */
-    sf::Time elapsed_; /**< timer that controlls the player animations */
-    sf::Clock clock_; /**< timer that controlls the player animations */
 };
 
 #endif

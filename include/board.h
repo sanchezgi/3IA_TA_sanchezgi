@@ -18,8 +18,6 @@ enum TileType {
     kTileType_Normal,    // kTileType_Normal has to be the first of the walkables
     kTileType_Door,
     kTileType_End,
-    kTileType_Player
-
 };
 
 // Possible Unit commands. Mainly for AI units
@@ -77,6 +75,7 @@ public:
     // Check if a unit can move from an origin index to a destination index
     bool checkUnitMovement(int roster_idx, int origin, int dest);
     void moveUnit(int roster_idx, int origin, int dest);
+    void moveUnitWithoutCheck(int roster_idx, int origin, int dest);
 
     // Mark a unit as dead (not targetable and selectable) and
     // remove it from the board
@@ -85,6 +84,7 @@ public:
     // Returns the euclidean, non-pathfound distance in cells.
     // Returns -1 when and index is not valid
     int euclideanDistance(int origin, int dest);
+    int manhattanDistance(int origin, int dest);
 
     // Return a route between two indexes.
     // The optional "limit" parameter sets a size limit of the route.

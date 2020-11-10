@@ -39,7 +39,7 @@ void Board::init(int width, int height)
 
 	for (int& u : units_)
 	{
-		u = 1;
+		u = -1;
 	}
 }
 
@@ -153,9 +153,11 @@ int Board::findUnit(int roster_idx)
 
 bool Board::checkUnitMovement(int roster_idx, int origin, int dest)
 {
+		
 	if (dest < 0) return false;
 	if (dest >= width_ * height_) return false;
 	if (units_[dest] != -1) return  false;
+	if (cells_[dest].value != kTileType_Normal) return false;
 
 	return  true;
 }
@@ -167,6 +169,12 @@ void Board::moveUnit(int roster_idx, int origin, int dest)
 		units_[dest] = units_[origin];
 		units_[origin] = -1;
 	}
+}
+
+void Board::moveUnitWithoutCheck(int roster_idx, int origin, int dest)
+{
+	units_[dest] = units_[origin];
+	units_[origin] = -1;
 }
 
 void Board::killUnit(int target_idx)
@@ -185,13 +193,30 @@ int Board::euclideanDistance(int origin, int dest)
 {
 	int rowOrigin = -1, colOrigin = -1, rowDestiny = -1, colDestiny = -1;
 	index2rowcol(&rowOrigin, &colOrigin, origin);
-	index2rowcol(&rowDestiny, &colDestiny, origin);
+	index2rowcol(&rowDestiny, &colDestiny, dest);
 
 	if (rowOrigin == -1 || colOrigin == -1 || rowDestiny == -1 || rowDestiny == -1)
 	{
 		return -1;
 	}
-	
+
+	int hick1 = abs(rowDestiny - rowOrigin);
+	int hick2 = abs(colDestiny - colOrigin);
+
+	return hick1 * hick1 + hick2 * hick2;
+}
+
+int Board::manhattanDistance(int origin, int dest)
+{
+	int rowOrigin = -1, colOrigin = -1, rowDestiny = -1, colDestiny = -1;
+	index2rowcol(&rowOrigin, &colOrigin, origin);
+	index2rowcol(&rowDestiny, &colDestiny, dest);
+
+	if (rowOrigin == -1 || colOrigin == -1 || rowDestiny == -1 || rowDestiny == -1)
+	{
+		return -1;
+	}
+
 	return abs(rowDestiny - rowOrigin) + abs(colDestiny - colOrigin);
 }
 
@@ -218,12 +243,12 @@ void Board::debugPrint()
 	{
 		for (int col = 0; col < width_; ++col)
 		{
-			if (cell(row,col).value == kTileType_Normal)
+			if (cell(row,col).value == kTileType_Normal && units_[col + row * width_] != 1)
 			{
 				printf("_");
-			}else if(cell(row,col).value == kTileType_Wall){
+			}else if(cell(row,col).value == kTileType_Wall && units_[col + row * width_] != 1){
 				printf("#");
-			}else if(cell(row,col).value == kTileType_Player)
+			}else if (units_[col + row * width_] == 1)
 			{
 				printf("P");
 			}

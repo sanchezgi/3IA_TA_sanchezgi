@@ -44,7 +44,7 @@ public:
     void draw(sf::RenderWindow& window) override;
 
    
-    Player player_;
+    Player player_[10];
     Board board_;
    
     bool build_;

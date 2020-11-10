@@ -17,7 +17,6 @@ Player::Player(const Player& o) {
     velocity_.x = o.velocity_.x;
     velocity_.y = o.velocity_.y;
     sprite_ = o.sprite_;
-    elapsed_ = o.elapsed_;
     
 }
 
@@ -29,25 +28,24 @@ Player::~Player() {
 }
 
 void Player::init() {
-    life_ = 0;
-    gravity_ = 0;
-    jumpSpeed_ = 0;
+
     moveSpeed_ = 0;
     position_.x = 0;
     position_.y = 0;
     velocity_.x = 0;
     velocity_.y = 0;
+    row_[0] = 0;
+    col_[0] = 0;
+    index = 0;
+    typeMovement = kRandomMovement;
 
     texture_ = new sf::Texture();
     sprite_ = new sf::Sprite();
 }
 
-void Player::init(int life, int gravity, int jumpSpeed, int moveSpeed, sf::Vector2f position,
+void Player::init(int moveSpeed, sf::Vector2f position,
     sf::Vector2f velocity, const char* file_name) {
 
-    life_ = life;
-    gravity_ = gravity;
-    jumpSpeed_ = jumpSpeed;
     moveSpeed_ = moveSpeed;
     position_.x = position.x;
     position_.y = position.y;
@@ -56,7 +54,23 @@ void Player::init(int life, int gravity, int jumpSpeed, int moveSpeed, sf::Vecto
     row_[0] = 0;
     col_[0] = 0;
     index = 0;
+    typeMovement = kTrackingMovement;
+    pathChosen = false;
+    direction = -1;
 
+    patternsArray[0] = kGoForward;
+    patternsArray[1] = kGoForward;
+    patternsArray[2] = kTurnRight;
+    patternsArray[3] = kTurnRight;
+    patternsArray[4] = kBackwards;
+    patternsArray[5] = kBackwards;
+    patternsArray[6] = kTurnLeft;
+    patternsArray[7] = kTurnLeft;
+
+    direction = kUp;
+
+    step = 0;
+	
     if (file_name != NULL) {
         texture_->loadFromFile(file_name);
         sprite_->setTexture(*texture_);
@@ -66,7 +80,6 @@ void Player::init(int life, int gravity, int jumpSpeed, int moveSpeed, sf::Vecto
 
     sf::IntRect rect = sprite_->getTextureRect();
 
- 
     sprite_->setTextureRect(rect);
 }
 
@@ -88,62 +101,301 @@ void Player::movePosition(sf::Vector2f pos) {
     sprite_->move({ pos.x,pos.y });
 }
 
+void Player::randomMovement(sf::Time deltaTime, Input& input, Board* board)
+{
+    bool found = false;
 
-void Player::move(sf::Time deltaTime, Input& input,Board* board) {
- 
-        int random = rand() % 4;
+    while (!found)
+    {
+        const auto random = rand() % 4;
 
-       /* if (input.IsMovingRight) {
-        	
-            velocity_.x = moveSpeed_;
-            velocity_.y = 0.0f;
-        }
-        else if (input.IsMovingLeft) {
-            velocity_.x = - moveSpeed_;
-            velocity_.y = 0.0f;
-        }else if(input.IsMovingUp){
-            velocity_.y = -moveSpeed_;
-            velocity_.x = 0.0f;
-        }
-        else if (input.IsMovingDown) {
-            velocity_.y = moveSpeed_;
-            velocity_.x = 0.0f;
-        }
-        else{
-            velocity_.x = 0;
-            velocity_.y = 0;
-        }*/
-        
-        if (random == 0 && board->cells_[board->east(index)].value != kTileType_Wall) { // Right 
-
-            velocity_.x = moveSpeed_;
-            velocity_.y = 0.0f;
-            index = board->east(index);
-        }
-        else if (random == 1 && board->cells_[board->west(index)].value != kTileType_Wall) {             // Left
-            velocity_.x = -moveSpeed_;
-            velocity_.y = 0.0f;
-            index = board->west(index);
-        }
-        else if (random == 2 && board->cells_[board->north(index)].value != kTileType_Wall) {             // Up
+        if (random == 0 && board->checkUnitMovement(0, index, board->north(index)))
+        {
+            board->moveUnit(0, index, board->north(index));
+            direction = kUp;
             velocity_.y = -moveSpeed_;
             velocity_.x = 0.0f;
             index = board->north(index);
+            found = true;
+
         }
-        else if (random == 3 && board->cells_[board->south(index)].value != kTileType_Wall) {             // Down
+        else if (random == 1 && board->checkUnitMovement(0, index, board->west(index)))
+        {
+            board->moveUnit(0, index, board->west(index));
+            direction = kLeft;
+            velocity_.x = -moveSpeed_;
+            velocity_.y = 0.0f;
+            index = board->west(index);
+            found = true;
+
+        }
+        else if (random == 2 && board->checkUnitMovement(0, index, board->south(index)))
+        {
+            board->moveUnit(0, index, board->south(index));
+            direction = kDown;
             velocity_.y = moveSpeed_;
             velocity_.x = 0.0f;
             index = board->south(index);
-		}
-		else 
-		{
-			printf("No hago nada\n");
-			velocity_.y = 0.0f;
+            found = true;
+
+        }
+        else if (random == 3 && board->checkUnitMovement(0, index, board->east(index)))
+        {
+            board->moveUnit(0, index, board->east(index));
+            direction = kRight;
+            velocity_.x = moveSpeed_;
+            velocity_.y = 0.0f;
+            index = board->east(index);
+            found = true;
+        }
+        else
+        {
+            direction = kDirectionNone;
+            velocity_.x = 0.0f;
+            velocity_.y = 0.0f;
+            found = false;
+        }
+    }
+
+    movePosition({ velocity_.x , velocity_.y });
+}
+
+void Player::deterministMovement(sf::Time deltaTime, Input& input, Board* board)
+{	
+    if (!pathChosen)
+    {
+        direction = rand() % 4;
+        pathChosen = true;
+    }
+   
+    if (direction == kUp)
+    {
+        board->moveUnit(0, index, board->north(index));
+        velocity_.y = -moveSpeed_;
+        velocity_.x = 0.0f;
+        index = board->north(index);
+    }
+    else if (direction == kLeft)
+    {
+        board->moveUnit(0, index, board->west(index));
+        velocity_.x = -moveSpeed_;
+        velocity_.y = 0.0f;
+        index = board->west(index);
+    }
+    else if (direction == kDown)
+    {
+        board->moveUnit(0, index, board->south(index));
+        velocity_.y = moveSpeed_;
+        velocity_.x = 0.0f;
+        index = board->south(index);
+    }
+    else if (direction == kRight)
+    {
+        board->moveUnit(0, index, board->east(index));
+        velocity_.x = moveSpeed_;
+        velocity_.y = 0.0f;
+        index = board->east(index);     
+    }
+
+    movePosition({ velocity_.x , velocity_.y });
+}
+
+void Player::patternMovement(sf::Time deltaTime, Input& input, Board* board)
+{
+	switch (patternsArray[step])
+	{
+		case kGoForward:
+			board->moveUnitWithoutCheck(0,index,board->north(index));
+            direction = kUp;
+            velocity_.y = -moveSpeed_;
+            velocity_.x = 0.0f;
+            index = board->north(index);
+            step++;
+            break;
+		
+        case kTurnRight:
+            board->moveUnitWithoutCheck(0, index, board->east(index));
+            direction = kRight;
+            velocity_.x = moveSpeed_;
+            velocity_.y = 0.0f;
+            index = board->east(index);
+            step++;
+            break;
+		
+        case kTurnLeft:
+            board->moveUnitWithoutCheck(0, index, board->west(index));
+            direction = kLeft;
+            velocity_.x = -moveSpeed_;
+            velocity_.y = 0.0f;
+            index = board->west(index);
+            step++;
+			break;
+
+        case kBackwards:
+            board->moveUnitWithoutCheck(0, index, board->south(index));
+            direction = kDown;
+            velocity_.y = moveSpeed_;
+            velocity_.x = 0.0f;
+            index = board->south(index);
+            step++;
+			break;
+		
+        default:
+            break;	
+	}
+
+	//TODO step up to size of patternsArray
+	
+	if (step > 7)
+	{
+        step = 0;
+	}
+	
+    movePosition({ velocity_.x , velocity_.y });
+	
+}
+
+void Player::trackingMovement(sf::Time deltaTime, Input& input, Board* board, int dest)
+{
+    int directions[4];
+	
+    directions[0] = board->north(index);
+    directions[1] = board->west(index);
+    directions[2] = board->south(index);
+    directions[3] = board->east(index);
+	
+    int distances[4] = {0};
+
+    const int back = (direction + 2) % 4;
+
+    directions[back] = -1;
+
+	// Non walkable
+	
+    for (int i = 0; i < 4; ++i)
+    {
+	    if (directions[i] != -1)
+	    {
+		    if (board->checkUnitMovement(0,index,directions[i]) == false)
+		    {
+                directions[i] = -1;
+            }
+	    }
+    }
+
+	// Check distances
+
+    for (int i = 0; i < 4; ++i)
+    {
+	    if (directions[i] != -1)
+	    {
+            distances[i] = board->manhattanDistance(directions[i], dest);
+	    }
+    }
+
+	// Chose direction
+
+    int next = 5;
+
+    int min_distance = board->width_ * board->height_;
+
+    for (int i = 0; i < 4; ++i)
+    {
+	    if (directions[i] != -1)
+	    {
+		    if (distances[i] < min_distance)
+		    {
+                min_distance = distances[i];
+                next = i;
+		    }
+	    }
+    }
+	
+    direction = next;
+
+    switch (direction)
+    {
+		case kUp:
+    		board->moveUnitWithoutCheck(0, index, board->north(index));
+			direction = kUp;
+			velocity_.y = -moveSpeed_;
 			velocity_.x = 0.0f;
-		}
-     
-		board->cells_[index].value = kTileType_Player;
-        movePosition({ velocity_.x , velocity_.y });   
+			index = board->north(index);
+			break;
+    	
+        case kLeft:
+            board->moveUnitWithoutCheck(0, index, board->west(index));
+            direction = kLeft;
+            velocity_.x = -moveSpeed_;
+            velocity_.y = 0.0f;
+            index = board->west(index);
+            break;
+
+        case kDown:
+            board->moveUnitWithoutCheck(0, index, board->south(index));
+            direction = kDown;
+            velocity_.y = moveSpeed_;
+            velocity_.x = 0.0f;
+            index = board->south(index);
+            break;
+
+        case kRight:
+            board->moveUnitWithoutCheck(0, index, board->east(index));
+            direction = kRight;
+            velocity_.x = moveSpeed_;
+            velocity_.y = 0.0f;
+            index = board->east(index);
+            break;
+
+        case kDirectionNone:
+            direction = kDirectionNone;
+            velocity_.x = 0.0f;
+            velocity_.y = 0.0f;
+            break;
+    		  	
+        default:
+            break;   		
+    }
+
+    movePosition({ velocity_.x , velocity_.y });
+}
+
+
+void Player::move(sf::Time deltaTime, Input& input,Board* board)
+{
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
+	{
+        typeMovement = kDeterministMovement;
+		
+	}else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
+    {
+        typeMovement = kRandomMovement;
+    }
+	
+	switch (typeMovement)
+	{
+		case kRandomMovement: randomMovement(deltaTime, input, board);
+			break;
+		
+        case kPathFinding:
+			break;
+		
+        case kPattern: patternMovement(deltaTime, input, board);
+            break;
+
+        case kDeterministMovement: deterministMovement(deltaTime, input, board);
+            break;
+
+        case kTrackingMovement: trackingMovement(deltaTime, input, board, 124);
+			break;
+		
+        case kNone:
+            break;
+		
+        default:
+			break;
+	}
+    
 }
 
 void Player::update(sf::Time deltaTime, Input& input,Board* board) {
