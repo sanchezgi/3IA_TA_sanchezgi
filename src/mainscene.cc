@@ -32,7 +32,7 @@ void TitleScene::init() {
         board_.units_[player_[i].index] = 1;
     }
      
-    texture.loadFromFile("../../../data/gfx/maps/map_03_960x704_cost.png");
+    texture.loadFromFile("../../../data/gfx/maps/map_03_960x704_layout ABGS.png");
     sprite.setTexture(texture);
     sprite.setScale(1.0f, 1.0f);
 }

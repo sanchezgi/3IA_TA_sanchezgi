@@ -31,6 +31,7 @@ enum PatternsCommands
 	kTurnRight,
 	kStop,
 	kBackwards,	
+	kPatternNone,
 };
 
 enum Direction
@@ -119,7 +120,7 @@ public:
     int typeMovement;
     bool pathChosen;
     int direction;
-    int patternsArray[8];
+	std::vector<int> patternsArray[8];
     int step;
     sf::Vector2f position_;
     sf::Vector2f velocity_;

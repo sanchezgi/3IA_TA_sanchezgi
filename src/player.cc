@@ -16,8 +16,7 @@ Player::Player(const Player& o) {
     position_.y = o.position_.y;
     velocity_.x = o.velocity_.x;
     velocity_.y = o.velocity_.y;
-    sprite_ = o.sprite_;
-    
+    sprite_ = o.sprite_;  
 }
 
 Player::~Player() {
@@ -58,14 +57,14 @@ void Player::init(int moveSpeed, sf::Vector2f position,
     pathChosen = false;
     direction = -1;
 
-    patternsArray[0] = kGoForward;
-    patternsArray[1] = kGoForward;
-    patternsArray[2] = kTurnRight;
-    patternsArray[3] = kTurnRight;
-    patternsArray[4] = kBackwards;
-    patternsArray[5] = kBackwards;
-    patternsArray[6] = kTurnLeft;
-    patternsArray[7] = kTurnLeft;
+	patternsArray->push_back(kGoForward);
+    patternsArray->push_back(kGoForward);
+    patternsArray->push_back(kTurnRight);
+    patternsArray->push_back(kTurnRight);
+    patternsArray->push_back(kBackwards);
+    patternsArray->push_back(kBackwards);
+    patternsArray->push_back(kTurnLeft);
+    patternsArray->push_back(kTurnLeft);
 
     direction = kUp;
 
@@ -202,7 +201,7 @@ void Player::deterministMovement(sf::Time deltaTime, Input& input, Board* board)
 
 void Player::patternMovement(sf::Time deltaTime, Input& input, Board* board)
 {
-	switch (patternsArray[step])
+	switch (patternsArray->at(step))
 	{
 		case kGoForward:
 			board->moveUnitWithoutCheck(0,index,board->north(index));
@@ -246,7 +245,7 @@ void Player::patternMovement(sf::Time deltaTime, Input& input, Board* board)
 
 	//TODO step up to size of patternsArray
 	
-	if (step > 7)
+	if (step >= patternsArray->size())
 	{
         step = 0;
 	}
@@ -257,6 +256,11 @@ void Player::patternMovement(sf::Time deltaTime, Input& input, Board* board)
 
 void Player::trackingMovement(sf::Time deltaTime, Input& input, Board* board, int dest)
 {
+	if (direction == kDirectionNone)
+	{
+		direction = rand() % 4;
+	}
+
     int directions[4];
 	
     directions[0] = board->north(index);
@@ -295,7 +299,7 @@ void Player::trackingMovement(sf::Time deltaTime, Input& input, Board* board, in
 
 	// Chose direction
 
-    int next = 5;
+    int next = 4;
 
     int min_distance = board->width_ * board->height_;
 

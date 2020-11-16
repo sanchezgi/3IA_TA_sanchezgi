@@ -46,16 +46,7 @@ public:
    
     Player player_[10];
     Board board_;
-   
-    bool build_;
-    const int max_enemies = 20;
-
-    int number_build_tiles_;
-    int number_dec_tiles_;
-    int number_erase_tiles_;
-    sf::Time timer_;
-    sf::Clock clock_;
-
+  
 private:
 
     /** @brief Copy constructor.
