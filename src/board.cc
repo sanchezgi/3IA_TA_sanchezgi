@@ -179,8 +179,14 @@ void Board::moveUnit(int roster_idx, int origin, int dest)
 
 void Board::moveUnitWithoutCheck(int roster_idx, int origin, int dest)
 {
-	units_[dest] = units_[origin];
-	units_[origin] = -1;
+	if (dest >= width_ * height_ || dest < 0)
+	{
+		
+	}
+	else {
+		units_[dest] = units_[origin];
+		units_[origin] = -1;
+	}	
 }
 
 void Board::killUnit(int target_idx)
