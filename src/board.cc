@@ -107,6 +107,11 @@ int Board::west(int idx)
 
 uint8_t Board::isWall(int idx)
 {
+  if (idx < 0)
+  {
+		return 0;
+  }
+
 	if (cells_[idx].value == kTileType_Wall)
 	{
 		return 1;
