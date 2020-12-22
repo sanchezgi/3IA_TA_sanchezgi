@@ -2,7 +2,7 @@
 * @author Alejandro Sanchez Gimeno
 * @date 25 Oct 2019
 * @copyright 2019 Alejandro Sanchez Gimeno
-* @brief Player class.
+* @brief Agent class.
 */
 
 #ifndef __PLAYER_H__
@@ -20,7 +20,7 @@ enum MovementType
     kPathFinding,
     kPattern,
     kDeterministMovement,
-	kTrackingMovement,
+	  kTrackingMovement,
     kNone,
 };
 
@@ -31,7 +31,6 @@ enum PatternsCommands
 	kTurnRight,
 	kStop,
 	kBackwards,	
-	kPatternNone,
 };
 
 enum Direction
@@ -43,22 +42,22 @@ enum Direction
 	kDirectionNone,
 };
 
-class Player {
+class Agent {
 public:
 
     /** @brief Default constructor.
     *
     */
-    Player();
+    Agent();
     /** @brief Copy constructor.
     *
     * @param o the object you want to copy from.
     */
-    Player(const Player& o);
+    Agent(const Agent& o);
     /** @brief Default destructor.
     *
     */
-    ~Player();
+    ~Agent();
     /** @brief Function that initializes to zero all the class variables.
     *
     */
@@ -71,7 +70,7 @@ public:
     * @param file_name The file of the spritesheet.
     */
     void init(int moveSpeed, sf::Vector2f position,
-        sf::Vector2f velocity, const char* file_name);
+        sf::Vector2f velocity,MovementType type, const char* file_name);
     /** @brief Sets the position of the player.
     *
     * @param pos The position the player will set.
@@ -94,14 +93,14 @@ public:
     * @param collision1 The first point to detect the collision and decides if the player moves or not.
     * @param collision2 The second point to detect the collision and decides if the player moves or not.
     */
-    void move(sf::Time deltaTime, Input& input,Board* Board);
+    void move(sf::Time deltaTime, Input& input,Board* Board, int dest);
     /** @brief Updates the player
     *
     * @param input The input of the player.
     * @param collision1 The first point to detect the collision and decides if the player updates or not.
     * @param collision2 The second point to detect the collision and decides if the player updates or not.
     */
-    void update(sf::Time deltaTime, Input& input,Board* board);
+    void update(sf::Time deltaTime, Input& input,Board* board, int dest);
     /** @brief Draw the player
     *
     * @param window The window that renders and paint the objects.
@@ -120,8 +119,8 @@ public:
     int typeMovement;
     bool pathChosen;
     int direction;
-	std::vector<int> patternsArray[8];
-    int step;
+    std::vector<int> patternsArray;
+    unsigned int step;
     sf::Vector2f position_;
     sf::Vector2f velocity_;
     sf::Sprite* sprite_; /**< pointer to the player sprite */

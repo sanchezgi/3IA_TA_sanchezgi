@@ -1,7 +1,7 @@
 /**
 * @author Alejandro Sanchez Gimeno
 * @date 2020 - 2021
-* @copyright 2019 Alejandro Sanchez Gimeno
+* @copyright 2020 Alejandro Sanchez Gimeno
 * @brief Game class that manages all the scenes.
 */
 
@@ -55,6 +55,10 @@ protected:
     */
     void processEvent(Input& input);
     void fixedUpdate(sf::Time deltaTIme);
+    void fixedUpdateRandom(sf::Time deltaTIme);
+    void fixedUpdateDeterminist(sf::Time deltaTIme);
+    void fixedUpdatePattern(sf::Time deltaTIme);
+    void fixedUpdatePacMan(sf::Time deltaTIme);
     /** @brief Draw the current scene.
     *
     */

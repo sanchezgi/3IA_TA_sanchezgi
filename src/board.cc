@@ -1,4 +1,5 @@
 #include <board.h>
+#include <Agent.h>
 
 Board::Board()
 {
@@ -235,6 +236,35 @@ int Board::randomWalkableTile()
 		random_index = rand() % (width_ * height_);
 	}
 	return random_index;
+}
+
+int Board::randomWalkablePatternTile(Agent* player)
+{
+  if (player->typeMovement == kDeterministMovement)
+  {
+		int random_index = rand() % (width_ * height_);
+
+    while (isWall(random_index) == 1 || isWall(west(random_index)) == 1 || isWall(west(west(random_index))))
+    {
+			random_index = rand() % (width_ * height_);
+    }
+
+		return random_index;
+  }
+
+	if (player->typeMovement == kPattern)
+	{
+		int random_index = rand() % (width_ * height_);
+
+		while (isWall(random_index) == 1 || isWall(north(random_index)) == 1 || isWall(north(north(random_index))) == 1 || isWall(east(north(north(random_index)))) == 1 
+			    || isWall(east(east(north(north(random_index))))) == 1 || isWall(south(east(east(north(north(random_index)))))) == 1 
+			    || isWall(east(random_index)) == 1 || isWall(east(east(random_index))) == 1)
+		{
+			random_index = rand() % (width_ * height_);
+		}
+
+		return random_index;
+	}
 }
 
 void Board::debugPrint()

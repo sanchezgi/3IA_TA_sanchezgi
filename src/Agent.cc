@@ -1,32 +1,33 @@
 /**
 * @author Alejandro Sanchez Gimeno
-* @date 25 Oct 2019
-* @copyright 2019 Alejandro Sanchez Gimeno
-* @brief Player class.
+* @date 2020
+* @copyright 2020 Alejandro Sanchez Gimeno
+* @brief Agent class.
 */
-#include "player.h"
+#include "Agent.h"
 #include "board.h"
 
-Player::Player() {
+Agent::Agent() {
     init();
 }
 
-Player::Player(const Player& o) {
+Agent::Agent(const Agent& o) {
     position_.x = o.position_.x;
     position_.y = o.position_.y;
     velocity_.x = o.velocity_.x;
     velocity_.y = o.velocity_.y;
-    sprite_ = o.sprite_;  
+    sprite_ = o.sprite_;
+    
 }
 
-Player::~Player() {
+Agent::~Agent() {
     delete(texture_);
     texture_ = nullptr;
     delete(sprite_);
     sprite_ = nullptr;
 }
 
-void Player::init() {
+void Agent::init() {
 
     moveSpeed_ = 0;
     position_.x = 0;
@@ -42,8 +43,8 @@ void Player::init() {
     sprite_ = new sf::Sprite();
 }
 
-void Player::init(int moveSpeed, sf::Vector2f position,
-    sf::Vector2f velocity, const char* file_name) {
+void Agent::init(int moveSpeed, sf::Vector2f position,
+    sf::Vector2f velocity, MovementType type, const char* file_name) {
 
     moveSpeed_ = moveSpeed;
     position_.x = position.x;
@@ -53,19 +54,35 @@ void Player::init(int moveSpeed, sf::Vector2f position,
     row_[0] = 0;
     col_[0] = 0;
     index = 0;
-    typeMovement = kTrackingMovement;
+
+    typeMovement = type;
     pathChosen = false;
     direction = -1;
 
-	patternsArray->push_back(kGoForward);
-    patternsArray->push_back(kGoForward);
-    patternsArray->push_back(kTurnRight);
-    patternsArray->push_back(kTurnRight);
-    patternsArray->push_back(kBackwards);
-    patternsArray->push_back(kBackwards);
-    patternsArray->push_back(kTurnLeft);
-    patternsArray->push_back(kTurnLeft);
+    if (typeMovement == kPattern)
+    {
+      patternsArray.push_back(kGoForward);
+      patternsArray.push_back(kGoForward);
+      patternsArray.push_back(kTurnRight);
+      patternsArray.push_back(kTurnRight);
+      patternsArray.push_back(kBackwards);
+      patternsArray.push_back(kBackwards);
+      patternsArray.push_back(kTurnLeft);
+      patternsArray.push_back(kTurnLeft);
+    }
 
+    if (typeMovement == kDeterministMovement)
+    {
+      patternsArray.push_back(kTurnLeft);
+      patternsArray.push_back(kTurnLeft);
+      patternsArray.push_back(kTurnLeft);
+      patternsArray.push_back(kTurnRight);
+      patternsArray.push_back(kTurnRight);
+      patternsArray.push_back(kTurnRight);
+
+    }
+
+   
     direction = kUp;
 
     step = 0;
@@ -82,15 +99,15 @@ void Player::init(int moveSpeed, sf::Vector2f position,
     sprite_->setTextureRect(rect);
 }
 
-void Player::setPosition(sf::Vector2f pos) {
+void Agent::setPosition(sf::Vector2f pos) {
     sprite_->setPosition({ pos.x,pos.y });
 }
 
-sf::Vector2f Player::getPosition() {
+sf::Vector2f Agent::getPosition() {
     return sprite_->getPosition();
 }
 
-void Player::movePosition(sf::Vector2f pos) {
+void Agent::movePosition(sf::Vector2f pos) {
 
     sf::Vector2f position = sprite_->getPosition();
 
@@ -100,7 +117,7 @@ void Player::movePosition(sf::Vector2f pos) {
     sprite_->move({ pos.x,pos.y });
 }
 
-void Player::randomMovement(sf::Time deltaTime, Input& input, Board* board)
+void Agent::randomMovement(sf::Time deltaTime, Input& input, Board* board)
 {
     bool found = false;
 
@@ -159,49 +176,67 @@ void Player::randomMovement(sf::Time deltaTime, Input& input, Board* board)
     movePosition({ velocity_.x , velocity_.y });
 }
 
-void Player::deterministMovement(sf::Time deltaTime, Input& input, Board* board)
+void Agent::deterministMovement(sf::Time deltaTime, Input& input, Board* board)
 {	
-    if (!pathChosen)
-    {
-        direction = rand() % 4;
-        pathChosen = true;
-    }
-   
-    if (direction == kUp)
-    {
-        board->moveUnit(0, index, board->north(index));
-        velocity_.y = -moveSpeed_;
-        velocity_.x = 0.0f;
-        index = board->north(index);
-    }
-    else if (direction == kLeft)
-    {
-        board->moveUnit(0, index, board->west(index));
-        velocity_.x = -moveSpeed_;
-        velocity_.y = 0.0f;
-        index = board->west(index);
-    }
-    else if (direction == kDown)
-    {
-        board->moveUnit(0, index, board->south(index));
-        velocity_.y = moveSpeed_;
-        velocity_.x = 0.0f;
-        index = board->south(index);
-    }
-    else if (direction == kRight)
-    {
-        board->moveUnit(0, index, board->east(index));
-        velocity_.x = moveSpeed_;
-        velocity_.y = 0.0f;
-        index = board->east(index);     
-    }
+  switch (patternsArray[step])
+  {
+  case kGoForward:
+    board->moveUnitWithoutCheck(0, index, board->north(index));
+    direction = kUp;
+    velocity_.y = -moveSpeed_;
+    velocity_.x = 0.0f;
+    index = board->north(index);
+    step++;
+    break;
 
-    movePosition({ velocity_.x , velocity_.y });
+  case kTurnRight:
+    board->moveUnitWithoutCheck(0, index, board->east(index));
+    direction = kRight;
+    velocity_.x = moveSpeed_;
+    velocity_.y = 0.0f;
+    index = board->east(index);
+    step++;
+    break;
+
+  case kTurnLeft:
+    board->moveUnitWithoutCheck(0, index, board->west(index));
+    direction = kLeft;
+    velocity_.x = -moveSpeed_;
+    velocity_.y = 0.0f;
+    index = board->west(index);
+    step++;
+    break;
+
+  case kBackwards:
+    board->moveUnitWithoutCheck(0, index, board->south(index));
+    direction = kDown;
+    velocity_.y = moveSpeed_;
+    velocity_.x = 0.0f;
+    index = board->south(index);
+    step++;
+    break;
+
+  case kStop:
+    direction = kDirectionNone;
+    velocity_.x = 0.0f;
+    velocity_.y = 0.0f;
+    break;
+
+  default:
+    break;
+  }
+
+  if (step >= patternsArray.size())
+  {
+    step = 0;
+  }
+
+  movePosition({ velocity_.x , velocity_.y });
 }
 
-void Player::patternMovement(sf::Time deltaTime, Input& input, Board* board)
+void Agent::patternMovement(sf::Time deltaTime, Input& input, Board* board)
 {
-	switch (patternsArray->at(step))
+	switch (patternsArray[step])
 	{
 		case kGoForward:
 			board->moveUnitWithoutCheck(0,index,board->north(index));
@@ -243,24 +278,16 @@ void Player::patternMovement(sf::Time deltaTime, Input& input, Board* board)
             break;	
 	}
 
-	//TODO step up to size of patternsArray
-	
-	if (step >= patternsArray->size())
+	if (step >= patternsArray.size())
 	{
         step = 0;
 	}
 	
     movePosition({ velocity_.x , velocity_.y });
-	
 }
 
-void Player::trackingMovement(sf::Time deltaTime, Input& input, Board* board, int dest)
+void Agent::trackingMovement(sf::Time deltaTime, Input& input, Board* board, int dest)
 {
-	if (direction == kDirectionNone)
-	{
-		direction = rand() % 4;
-	}
-
     int directions[4];
 	
     directions[0] = board->north(index);
@@ -299,7 +326,7 @@ void Player::trackingMovement(sf::Time deltaTime, Input& input, Board* board, in
 
 	// Chose direction
 
-    int next = 4;
+    int next = 5;
 
     int min_distance = board->width_ * board->height_;
 
@@ -365,17 +392,8 @@ void Player::trackingMovement(sf::Time deltaTime, Input& input, Board* board, in
 }
 
 
-void Player::move(sf::Time deltaTime, Input& input,Board* board)
+void Agent::move(sf::Time deltaTime, Input& input,Board* board, int dest)
 {
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
-	{
-        typeMovement = kDeterministMovement;
-		
-	}else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
-    {
-        typeMovement = kRandomMovement;
-    }
-	
 	switch (typeMovement)
 	{
 		case kRandomMovement: randomMovement(deltaTime, input, board);
@@ -390,7 +408,7 @@ void Player::move(sf::Time deltaTime, Input& input,Board* board)
         case kDeterministMovement: deterministMovement(deltaTime, input, board);
             break;
 
-        case kTrackingMovement: trackingMovement(deltaTime, input, board, 124);
+        case kTrackingMovement: trackingMovement(deltaTime, input, board, dest);
 			break;
 		
         case kNone:
@@ -402,12 +420,12 @@ void Player::move(sf::Time deltaTime, Input& input,Board* board)
     
 }
 
-void Player::update(sf::Time deltaTime, Input& input,Board* board) {
+void Agent::update(sf::Time deltaTime, Input& input,Board* board, int dest) {
 	
-    move(deltaTime,input,board);
+    move(deltaTime,input,board, dest);
 }
 
-void Player::draw(sf::RenderWindow& window) {
+void Agent::draw(sf::RenderWindow& window) {
     
         window.draw(*sprite_);
     

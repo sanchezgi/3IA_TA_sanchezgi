@@ -1,7 +1,7 @@
 /**
 * @author Alejandro Sanchez Gimeno
 * @date 2020 - 2021
-* @copyright 2019 Alejandro Sanchez Gimeno
+* @copyright 2020 Alejandro Sanchez Gimeno
 * @brief Scene class. It's abstract
 */
 
@@ -24,7 +24,12 @@ public:
     * @param myinput user input.
     * @param window The window that renders and paint the object.
     */
-    virtual void update(sf::Time deltaTime, Input& myinput, sf::RenderWindow& window) = 0;
+    virtual void update(sf::Time deltaTime, Input& myinput, sf::RenderWindow& window,int dest) = 0;
+
+    virtual void updateRandomMovement(sf::Time deltaTime, Input& myinput, sf::RenderWindow& window) = 0;
+    virtual void updateDeterministMovement(sf::Time deltaTime, Input& myinput, sf::RenderWindow& window) = 0;
+    virtual void updatePatronMovement(sf::Time deltaTime, Input& myinput, sf::RenderWindow& window) = 0;
+    virtual void updatePacManMovement(sf::Time deltaTime, Input& myinput, sf::RenderWindow& window,int dest) = 0;
     /** @brief Function that draws all the objects.
     *
     * @param window The window that renders and paint the object.

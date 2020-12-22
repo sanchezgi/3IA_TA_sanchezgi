@@ -1,7 +1,7 @@
 /**
 * @author Alejandro Sanchez Gimeno
-* @date 30 Oct 2019
-* @copyright 2019 Alejandro Sanchez Gimeno
+* @date 2020 - 2021
+* @copyright 2020 Alejandro Sanchez Gimeno
 * @brief Game class that manages all the scenes.
 */
 
@@ -9,7 +9,10 @@
 #include "mainscene.h"
 #include "gamemanager.h"
 
-sf::Time TimePerFrame = sf::seconds(1.0f);
+sf::Time TimePerFrameRandom = sf::seconds(0.75f);
+sf::Time TimePerFrameDeterminist = sf::seconds(1.0f);
+sf::Time TimePerFramePattern = sf::seconds(1.25f);
+sf::Time TimePerFramePacMan = sf::seconds(1.5f);
 
 void Game::init() {
     GameManager& GM = GameManager::Instance();
@@ -34,21 +37,50 @@ void Game::init() {
 
 void Game::mainLoop(Input& input_) {
 
-    sf::Clock clock;
-    sf::Time timeSinceLastUpdate = sf::Time::Zero;
+    sf::Clock clockRandom;
+    sf::Clock clockDeterminist;
+    sf::Clock clockPattern;
+    sf::Clock clockPacMAn;
+
+    sf::Time timeSinceLastUpdateRandom = sf::Time::Zero;
+    sf::Time timeSinceLastUpdateDeterminist = sf::Time::Zero;
+    sf::Time timeSinceLastUpdatePattern = sf::Time::Zero;
+    sf::Time timeSinceLastUpdatePacMan = sf::Time::Zero;
+
     while (window_.isOpened())
     {
-        //sf::Time deltaTime = clock.restart();
         checkScene();
         processEvent(input_);
-        //update(deltaTime);
-        timeSinceLastUpdate += clock.restart();
-        while (timeSinceLastUpdate > TimePerFrame)
+
+        timeSinceLastUpdateRandom += clockRandom.restart();
+        timeSinceLastUpdateDeterminist += clockDeterminist.restart();
+        timeSinceLastUpdatePattern += clockPattern.restart();
+        timeSinceLastUpdatePacMan += clockPacMAn.restart();
+
+        if (timeSinceLastUpdateRandom > TimePerFrameRandom)
         {
-            timeSinceLastUpdate -= TimePerFrame;
-            processEvent(input_);
-            fixedUpdate(TimePerFrame);       	
+          timeSinceLastUpdateRandom -= TimePerFrameRandom;
+          fixedUpdateRandom(TimePerFrameRandom);
         }
+
+        if (timeSinceLastUpdateDeterminist > TimePerFrameDeterminist)
+        {
+          timeSinceLastUpdateDeterminist -= TimePerFrameDeterminist;
+          fixedUpdateDeterminist(TimePerFrameDeterminist);
+        }
+
+        if (timeSinceLastUpdatePattern > TimePerFramePattern)
+        {
+          timeSinceLastUpdatePattern -= TimePerFramePattern;
+          fixedUpdatePattern(TimePerFramePattern);
+        }
+
+        if (timeSinceLastUpdatePacMan > TimePerFramePacMan)
+        {
+          timeSinceLastUpdatePacMan -= TimePerFramePacMan;
+          fixedUpdatePacMan(TimePerFramePacMan);
+        }
+
         draw();
     }
 }
@@ -91,7 +123,7 @@ void Game::input(Input& input)
 }
 void Game::update(sf::Time deltaTime)
 {
-    current_scene_->update(deltaTime, input_, window_.window_);
+    current_scene_->update(deltaTime, input_, window_.window_,0);
 }
 
 void Game::processEvent(Input& input_)
@@ -105,7 +137,27 @@ void Game::processEvent(Input& input_)
 
 void Game::fixedUpdate(sf::Time deltaTIme)
 {
-    current_scene_->update(deltaTIme, input_, window_.window_);
+    current_scene_->update(deltaTIme, input_, window_.window_,0);
+}
+
+void Game::fixedUpdateRandom(sf::Time deltaTIme)
+{
+  current_scene_->updateRandomMovement(deltaTIme, input_, window_.window_);
+}
+
+void Game::fixedUpdateDeterminist(sf::Time deltaTIme)
+{
+  current_scene_->updateDeterministMovement(deltaTIme, input_, window_.window_);
+}
+
+void Game::fixedUpdatePattern(sf::Time deltaTIme)
+{
+  current_scene_->updatePatronMovement(deltaTIme, input_, window_.window_);
+}
+
+void Game::fixedUpdatePacMan(sf::Time deltaTIme)
+{
+  current_scene_->updatePacManMovement(deltaTIme, input_, window_.window_,0);
 }
 
 void Game::draw() {

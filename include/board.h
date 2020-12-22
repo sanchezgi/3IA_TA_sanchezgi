@@ -7,6 +7,8 @@
 #include <stack>
 #include <set>
 
+class Agent;
+
 const int kBoardMaxSize = 128;
 const int kBoardMinSize = 16;
 const int kBoardMaxUnits = 48;  // EVEN PLEASE
@@ -93,6 +95,8 @@ public:
 
     // Returns a random, walkable tile of the board
     int randomWalkableTile();
+
+    int randomWalkablePatternTile(Agent* player);
 
     // DEBUG print
     void debugPrint();
