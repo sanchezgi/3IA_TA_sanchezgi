@@ -15,6 +15,8 @@ class Input
 {
 public:
 
+  Input();
+  ~Input();
     bool IsMovingUp;
     bool IsMovingDown;
     bool IsMovingLeft;

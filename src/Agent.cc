@@ -391,6 +391,50 @@ void Agent::trackingMovement(sf::Time deltaTime, Input& input, Board* board, int
     movePosition({ velocity_.x , velocity_.y });
 }
 
+void Agent::inputMovement(sf::Time deltaTime, Input& input, Board* board, int dest)
+{
+  if (input.IsMovingUp)
+  {
+    board->moveUnitWithoutCheck(0, index, board->north(index));
+    direction = kUp;
+    velocity_.y = -moveSpeed_;
+    velocity_.x = 0.0f;
+    index = board->north(index);
+
+  }else if(input.IsMovingLeft)
+  {
+    board->moveUnitWithoutCheck(0, index, board->west(index));
+    direction = kLeft;
+    velocity_.x = -moveSpeed_;
+    velocity_.y = 0.0f;
+    index = board->west(index);
+
+  }else if(input.IsMovingDown)
+  {
+    board->moveUnitWithoutCheck(0, index, board->south(index));
+    direction = kDown;
+    velocity_.y = moveSpeed_;
+    velocity_.x = 0.0f;
+    index = board->south(index);
+
+  }else if(input.IsMovingRight)
+  {
+    board->moveUnitWithoutCheck(0, index, board->east(index));
+    direction = kRight;
+    velocity_.x = moveSpeed_;
+    velocity_.y = 0.0f;
+    index = board->east(index);
+
+  }else
+  {
+    direction = kDirectionNone;
+    velocity_.x = 0.0f;
+    velocity_.y = 0.0f;
+  }
+
+  movePosition({ velocity_.x , velocity_.y });
+}
+
 
 void Agent::move(sf::Time deltaTime, Input& input,Board* board, int dest)
 {
@@ -410,6 +454,9 @@ void Agent::move(sf::Time deltaTime, Input& input,Board* board, int dest)
 
         case kTrackingMovement: trackingMovement(deltaTime, input, board, dest);
 			break;
+
+        case kInputMovement: inputMovement(deltaTime, input, board, dest);
+          break;
 		
         case kNone:
             break;

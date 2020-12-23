@@ -55,7 +55,7 @@ void TitleScene::init() {
 
     // Agent
     player_.init(16.0f,
-      { 00.0f,0.0f }, { 0.0f,0.0f }, kNone, "../../../data/gfx/agents/axis_soldier.bmp");
+      { 00.0f,0.0f }, { 0.0f,0.0f }, kInputMovement, "../../../data/gfx/agents/axis_soldier.bmp");
     player_.index = board_.randomWalkableTile();
     board_.index2rowcol(player_.row_, player_.col_, player_.index);
     player_.setPosition(sf::Vector2f(player_.col_[0] * 16, player_.row_[0] * 16));
@@ -89,6 +89,7 @@ void TitleScene::updateRandomMovement(sf::Time deltaTime, Input& myinput, sf::Re
       agent_[i].update(deltaTime, myinput, &board_, player_.index);
     }
   }
+
   player_.update(deltaTime, myinput, &board_, player_.index);
   system("cls");
   board_.debugPrint();
@@ -129,6 +130,11 @@ void TitleScene::updatePacManMovement(sf::Time deltaTime, Input& myinput, sf::Re
     }
   }
 
+  player_.update(deltaTime, myinput, &board_, player_.index);
+}
+
+void TitleScene::updateInputMovement(sf::Time deltaTime, Input& myinput, sf::RenderWindow& window, int dest)
+{
   player_.update(deltaTime, myinput, &board_, player_.index);
 }
 

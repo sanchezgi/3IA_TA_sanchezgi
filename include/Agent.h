@@ -21,6 +21,7 @@ enum MovementType
     kPattern,
     kDeterministMovement,
 	  kTrackingMovement,
+    kInputMovement,
     kNone,
 };
 
@@ -111,6 +112,7 @@ public:
     void deterministMovement(sf::Time deltaTime, Input& input, Board* Board);
     void patternMovement(sf::Time deltaTime, Input& input, Board* Board);
     void trackingMovement(sf::Time deltaTime, Input& input, Board* Board,int dest);
+    void inputMovement(sf::Time deltaTime, Input& input, Board* Board,int dest);
 
     int moveSpeed_;
     int row_[1];

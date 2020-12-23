@@ -8,4 +8,14 @@
 #include <input.h>
 
 
-    
+Input::Input()
+{
+  IsMovingDown = false;
+  IsMovingUp = false;
+  IsMovingLeft = false;
+  IsMovingRight = false;
+}
+
+Input::~Input()
+{
+}

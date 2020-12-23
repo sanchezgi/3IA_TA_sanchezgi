@@ -179,7 +179,7 @@ void Board::moveUnit(int roster_idx, int origin, int dest)
 
 void Board::moveUnitWithoutCheck(int roster_idx, int origin, int dest)
 {
-	if (dest >= width_ * height_ || dest < 0)
+	if (dest >= width_ * height_ || dest < 0 || origin >= width_ * height_ || origin < 0)
 	{
 		
 	}

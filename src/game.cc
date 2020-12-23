@@ -13,11 +13,11 @@ sf::Time TimePerFrameRandom = sf::seconds(0.75f);
 sf::Time TimePerFrameDeterminist = sf::seconds(1.0f);
 sf::Time TimePerFramePattern = sf::seconds(1.25f);
 sf::Time TimePerFramePacMan = sf::seconds(1.5f);
+sf::Time TimePerFrameInput = sf::seconds(0.0f);
 
 void Game::init() {
     GameManager& GM = GameManager::Instance();
 
-	
     GameManager::Instance().w_width_ = 960;
     GameManager::Instance().w_height_ = 704;
 
@@ -31,8 +31,6 @@ void Game::init() {
 
     GameManager::Instance().num_scene_ = 1;
     GameManager::Instance().load_ = true;
-    //InitInput(input_);
-
 }
 
 void Game::mainLoop(Input& input_) {
@@ -41,11 +39,13 @@ void Game::mainLoop(Input& input_) {
     sf::Clock clockDeterminist;
     sf::Clock clockPattern;
     sf::Clock clockPacMAn;
+    sf::Clock clockInput;
 
     sf::Time timeSinceLastUpdateRandom = sf::Time::Zero;
     sf::Time timeSinceLastUpdateDeterminist = sf::Time::Zero;
     sf::Time timeSinceLastUpdatePattern = sf::Time::Zero;
     sf::Time timeSinceLastUpdatePacMan = sf::Time::Zero;
+    sf::Time timeSinceLastUpdateInput = sf::Time::Zero;
 
     while (window_.isOpened())
     {
@@ -56,6 +56,7 @@ void Game::mainLoop(Input& input_) {
         timeSinceLastUpdateDeterminist += clockDeterminist.restart();
         timeSinceLastUpdatePattern += clockPattern.restart();
         timeSinceLastUpdatePacMan += clockPacMAn.restart();
+        timeSinceLastUpdateInput += clockInput.restart();
 
         if (timeSinceLastUpdateRandom > TimePerFrameRandom)
         {
@@ -80,7 +81,9 @@ void Game::mainLoop(Input& input_) {
           timeSinceLastUpdatePacMan -= TimePerFramePacMan;
           fixedUpdatePacMan(TimePerFramePacMan);
         }
-
+      
+        fixedUpdateInput(TimePerFrameInput);
+        
         draw();
     }
 }
@@ -158,6 +161,11 @@ void Game::fixedUpdatePattern(sf::Time deltaTIme)
 void Game::fixedUpdatePacMan(sf::Time deltaTIme)
 {
   current_scene_->updatePacManMovement(deltaTIme, input_, window_.window_,0);
+}
+
+void Game::fixedUpdateInput(sf::Time deltaTIme)
+{
+  current_scene_->updateInputMovement(deltaTIme, input_, window_.window_, 0);
 }
 
 void Game::draw() {

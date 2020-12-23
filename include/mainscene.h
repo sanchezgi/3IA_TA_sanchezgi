@@ -42,6 +42,7 @@ public:
     void updateDeterministMovement(sf::Time deltaTime, Input& myinput, sf::RenderWindow& window) override;
     void updatePatronMovement(sf::Time deltaTime, Input& myinput, sf::RenderWindow& window) override;
     void updatePacManMovement(sf::Time deltaTime, Input& myinput, sf::RenderWindow& window,int dest) override;
+    void updateInputMovement(sf::Time deltaTime, Input& myinput, sf::RenderWindow& window,int dest) override;
 
     /** @brief Function that draws all the objects.
     *

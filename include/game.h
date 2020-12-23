@@ -59,6 +59,7 @@ protected:
     void fixedUpdateDeterminist(sf::Time deltaTIme);
     void fixedUpdatePattern(sf::Time deltaTIme);
     void fixedUpdatePacMan(sf::Time deltaTIme);
+    void fixedUpdateInput(sf::Time deltaTIme);
     /** @brief Draw the current scene.
     *
     */
@@ -71,6 +72,7 @@ protected:
     Scene* current_scene_; /**< pointer to the current scene */
 	
 };
+
 
 #endif
 

@@ -30,11 +30,13 @@ public:
     virtual void updateDeterministMovement(sf::Time deltaTime, Input& myinput, sf::RenderWindow& window) = 0;
     virtual void updatePatronMovement(sf::Time deltaTime, Input& myinput, sf::RenderWindow& window) = 0;
     virtual void updatePacManMovement(sf::Time deltaTime, Input& myinput, sf::RenderWindow& window,int dest) = 0;
+    virtual void updateInputMovement(sf::Time deltaTime, Input& myinput, sf::RenderWindow& window,int dest) = 0;
     /** @brief Function that draws all the objects.
     *
     * @param window The window that renders and paint the object.
     */
     virtual void draw(sf::RenderWindow& window) = 0;
 };
+
 
 #endif
